@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
- 
+
 exports.shorthands = undefined;
- 
+
 exports.up = (pgm) => {
-  pgm.createTable('notes', {
+  pgm.createTable('songs', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
@@ -12,13 +12,25 @@ exports.up = (pgm) => {
       type: 'TEXT',
       notNull: true,
     },
-    body: {
+    year: {
+      type: 'INTEGER',
+      notNull: true,
+    },
+    genre: {
       type: 'TEXT',
       notNull: true,
     },
-    tags: {
-      type: 'TEXT[]',
+    performer: {
+      type: 'TEXT',
       notNull: true,
+    },
+    duration: {
+      type: 'INTEGER',
+      notNull: true,
+    },
+    albumId: {
+      type: 'TEXT',
+      notNull: false,
     },
     created_at: {
       type: 'TEXT',
@@ -30,7 +42,7 @@ exports.up = (pgm) => {
     },
   });
 };
- 
+
 exports.down = (pgm) => {
-  pgm.dropTable('notes');
+  pgm.dropTable('songs');
 };

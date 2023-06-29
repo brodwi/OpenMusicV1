@@ -1,29 +1,28 @@
 const ClientError = require('../../exceptions/ClientError');
- 
-class NotesHandler {
+
+class AlbumsHandler {
   constructor(service, validator) {
     this._service = service;
     this._validator = validator;
- 
-    this.postNoteHandler = this.postNoteHandler.bind(this);
-    this.getNotesHandler = this.getNotesHandler.bind(this);
-    this.getNoteByIdHandler = this.getNoteByIdHandler.bind(this);
-    this.putNoteByIdHandler = this.putNoteByIdHandler.bind(this);
-    this.deleteNoteByIdHandler = this.deleteNoteByIdHandler.bind(this);
+
+    this.postAlbumsHandler = this.postAlbumsHandler.bind(this);
+    this.getAlbumsByIdHandler = this.getAlbumsByIdHandler.bind(this);
+    this.putAlbumsByIdHandler = this.putAlbumsByIdHandler.bind(this);
+    this.deleteAlbumsByIdHandler = this.deleteAlbumsByIdHandler.bind(this);
   }
- 
-  async postNoteHandler(request, h) {
+
+  async postAlbumsHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
-      const { title = 'untitled', body, tags } = request.payload;
- 
-      const noteId = await this._service.addNote({ title, body, tags });
- 
+      this._validator.validateAlbumsPayload(request.payload);
+      const {name, year} = request.payload;
+
+      const albumsId = await this._service.addAlbums({name, year});
+
       const response = h.response({
         status: 'success',
-        message: 'Catatan berhasil ditambahkan',
+        message: 'Album berhasil ditambahkan',
         data: {
-          noteId,
+          albumId: albumsId,
         },
       });
       response.code(201);
@@ -37,36 +36,28 @@ class NotesHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
+        message: 'Maaf, ada gangguan pada server!!!.',
       });
       response.code(500);
       console.error(error);
       return response;
     }
   }
- 
-  async getNotesHandler() {
-    const notes = await this._service.getNotes();
-    return {
-      status: 'success',
-      data: {
-        notes,
-      },
-    };
-  }
- 
-  async getNoteByIdHandler(request, h) {
+
+  async getAlbumsByIdHandler(request, h) {
     try {
-      const { id } = request.params;
-      const note = await this._service.getNoteById(id);
+      const {id} = request.params;
+      const album = await this._service.getAlbumsById(id);
+      const songs = await this._service.getSongsInAlbum(id);
+      const getDetailAlbumWichContainsSongs = {...album, songs};
       return {
         status: 'success',
         data: {
-          note,
+          album: getDetailAlbumWichContainsSongs,
         },
       };
     } catch (error) {
@@ -78,29 +69,26 @@ class NotesHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
+        message: 'Maaf, ada gangguan pada server!!!.',
       });
       response.code(500);
       console.error(error);
       return response;
     }
   }
- 
-  async putNoteByIdHandler(request, h) {
+
+  async putAlbumsByIdHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
-      const { title, body, tags } = request.payload;
-      const { id } = request.params;
- 
-      await this._service.editNoteById(id, { title, body, tags });
- 
+      this._validator.validateAlbumsPayload(request.payload);
+      const {id} = request.params;
+      await this._service.editAlbumsById(id, request.payload);
       return {
         status: 'success',
-        message: 'Catatan berhasil diperbarui',
+        message: 'Album berhasil diperbarui',
       };
     } catch (error) {
       if (error instanceof ClientError) {
@@ -111,26 +99,25 @@ class NotesHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
+        message: 'Maaf, ada gangguan pada server!!!.',
       });
       response.code(500);
       console.error(error);
       return response;
     }
   }
- 
-  async deleteNoteByIdHandler(request, h) {
+
+  async deleteAlbumsByIdHandler(request, h) {
     try {
-      const { id } = request.params;
-      await this._service.deleteNoteById(id);
- 
+      const {id} = request.params;
+      await this._service.deleteAlbumsById(id);
       return {
         status: 'success',
-        message: 'Catatan berhasil dihapus',
+        message: 'Album berhasil dihapus',
       };
     } catch (error) {
       if (error instanceof ClientError) {
@@ -141,11 +128,11 @@ class NotesHandler {
         response.code(error.statusCode);
         return response;
       }
- 
+
       // Server ERROR!
       const response = h.response({
         status: 'error',
-        message: 'Maaf, terjadi kegagalan pada server kami.',
+        message: 'Maaf, ada gangguan pada server!!!.',
       });
       response.code(500);
       console.error(error);
@@ -153,5 +140,5 @@ class NotesHandler {
     }
   }
 }
- 
-module.exports = NotesHandler;
+
+module.exports = AlbumsHandler;
