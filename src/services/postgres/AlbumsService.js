@@ -16,8 +16,8 @@ class AlbumsService {
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, name, year, createdAt, updatedAt],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $4) RETURNING id',
+      values: [id, name, year, createdAt],
     };
 
     const result = await this._pool.query(query);
@@ -36,11 +36,11 @@ class AlbumsService {
     };
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Album tidak ditemukan');
     }
 
-    return result.rows.map(mapDBToModel)[0];
+    return mapDBToModel(result.rows[0]);
   }
 
   async editAlbumsById(id, {name, year}) {
