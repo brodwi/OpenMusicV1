@@ -120,7 +120,6 @@ const init = async () => {
     },
   ]);
  
-// Di sini kamu bisa mendeklarasikan atau membuat extentions function untuk life cycle server onPreResponse, di mana ia akan mengintervensi response sebelum dikirimkan ke client. Di sana kamu bisa menetapkan error handling bila response tersebut merupakan client error.
 
 server.ext('onPreResponse', (request, h) => {
   // mendapatkan konteks response dari request
