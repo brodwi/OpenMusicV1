@@ -49,6 +49,14 @@ const routes = (handler) => [
       auth: 'sub2_jwt',
     },
   },
+  {
+  method: 'GET',
+  path: '/playlists/{id}/activities',
+  handler: handler.getPlaylistActivitiesHandler,
+  options: {
+    auth: 'sub2_jwt',
+  },
+},
 ];
 
 module.exports = routes;
