@@ -1,8 +1,8 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
-const InvarianError = require('../../exceptions/InvariantError');
-const NotFoundError = require('../../exceptions/NotFoundError');
-class CollaborationService {
+const InvariantError = require('../../exceptions/InvariantError');
+
+class CollaborationsService {
   constructor() {
     this._pool = new Pool();
   }
@@ -11,45 +11,33 @@ class CollaborationService {
     const id = `collab-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO collaborations VALUES($1,$2,$3) RETURNING id',
+      text: 'INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id',
       values: [id, playlistId, userId],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new InvarianError('Kolaborasi gagal');
+    if (!result.rows[0].id) {
+      throw new InvariantError('Kolaborasi gagal ditambahkan!');
     }
+
     return result.rows[0].id;
   }
 
   async deleteCollaboration(playlistId, userId) {
     const query = {
-      text: 'DELETE FROM collaborations WHERE playlist_id = $1 AND user_id = $2 RETURNING id',
+      text: 'DELETE FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
       values: [playlistId, userId],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new InvarianError('Kolaborasi gagal dihapus');
+    if (!result.rowCount) {
+      throw new InvariantError('Kolaborasi gagal dihapus!');
     }
   }
 
-  async verifyUser(userId) {
-    const query = {
-      text: 'SELECT * FROM users WHERE id = $1',
-      values: [userId],
-    };
-    const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
-      throw new NotFoundError('Maaf, user tidak ditemukan');
-    }
-    return result.rows[0];
-  }
-
-  async verifyCollaboration(playlistId, userId) {
+  async verifyCollaborator(playlistId, userId) {
     const query = {
       text: 'SELECT * FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
       values: [playlistId, userId],
@@ -57,10 +45,10 @@ class CollaborationService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows.length) {
-      throw new InvarianError('Kolaborasi gagal diverifikasi');
+    if (!result.rowCount) {
+      throw new InvariantError('Kolaborasi gagal diverifikasi!');
     }
   }
 }
 
-module.exports = CollaborationService;
+module.exports = CollaborationsService;
