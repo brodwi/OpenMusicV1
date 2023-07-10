@@ -13,7 +13,7 @@ class Listener {
             const result = await this._mailSender.sendEmail(
                 targetEmail,
                 JSON.stringify({
-                    playlists: {
+                    playlist: {
                         id: playlistsData.id,
                         name: playlistsData.name,
                         songs

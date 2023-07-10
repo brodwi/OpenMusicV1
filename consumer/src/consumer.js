@@ -13,9 +13,9 @@ const init = async() => {
 
     const channel = await connection.createChannel();
 
-    await channel.assertQueue('export:playlists', {
+    await channel.assertQueue('export:playlist', {
         durable: true,
     });
-    channel.consume('export:playlists', listener.listen, { noAck: true })
+    channel.consume('export:playlist', listener.listen, { noAck: true })
 }
 init();
