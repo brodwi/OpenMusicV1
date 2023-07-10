@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 class MailSender {
     constructor() {
-        this._transport = nodemailer.createTransport({
+        this._transporter = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
             port: 2525,
             auth: {
